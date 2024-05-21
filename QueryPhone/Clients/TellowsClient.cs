@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using QueryPhone.Model;
 using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
@@ -7,9 +8,15 @@ namespace QueryPhone.Clients
 {
     public class TellowsClient : IQueryPhoneClient
 	{
+		private readonly ILogger _logger;
 		private readonly HttpClient client = new HttpClient();
 
 		private string QueryUrl(string phone) => $"https://www.tellows.tw/num/{phone}";
+
+		public TellowsClient(ILogger<TellowsClient> logger)
+		{
+			_logger = logger;
+		}
 
 		public string GetName()
 		{
@@ -36,6 +43,7 @@ namespace QueryPhone.Clients
 			} 
 			catch (Exception ex) 
 			{
+				_logger.LogError(ex.ToString());
 				return new QueryPhoneResult { QueryUrl = QueryUrl(phone) };
 			}
 		}
