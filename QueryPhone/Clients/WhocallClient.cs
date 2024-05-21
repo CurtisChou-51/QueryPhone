@@ -1,13 +1,20 @@
-﻿using QueryPhone.Model;
+﻿using Microsoft.Extensions.Logging;
+using QueryPhone.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace QueryPhone.Clients
 {
     public class WhocallClient : IQueryPhoneClient
 	{
+		private readonly ILogger _logger;
 		private readonly HttpClient client = new HttpClient();
 
 		private string QueryUrl(string phone) => $"https://whocall.cc/search/{phone}";
+
+		public WhocallClient(ILogger<WhocallClient> logger)
+		{
+			_logger = logger;
+		}
 
 		public string GetName()
 		{
@@ -39,6 +46,7 @@ namespace QueryPhone.Clients
 			} 
 			catch (Exception ex)
 			{
+				_logger.LogError(ex.ToString());
 				return new QueryPhoneResult { QueryUrl = QueryUrl(phone) };
 			}
 		}

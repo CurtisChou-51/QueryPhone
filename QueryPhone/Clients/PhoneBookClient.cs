@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using QueryPhone.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -8,7 +9,13 @@ namespace QueryPhone.Clients
 {
     public class PhoneBookClient : IQueryPhoneClient
 	{
+		private readonly ILogger _logger;
 		private string QueryUrl(string phone) => $"https://phone-book.tw/search/{phone}.html";
+
+		public PhoneBookClient(ILogger<PhoneBookClient> logger)
+		{
+			_logger = logger;
+		}
 
 		public string GetName()
 		{
@@ -34,6 +41,7 @@ namespace QueryPhone.Clients
 			} 
 			catch (Exception ex) 
 			{
+				_logger.LogError(ex.ToString());
 				return new QueryPhoneResult { QueryUrl = QueryUrl(phone) };
 			}
 		}

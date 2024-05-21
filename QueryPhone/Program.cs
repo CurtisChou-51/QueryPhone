@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using QueryPhone.Clients;
 
 namespace QueryPhone
@@ -16,6 +16,10 @@ namespace QueryPhone
 			// see https://aka.ms/applicationconfiguration.
 			
 			var services = new ServiceCollection();
+			services.AddLogging(builder =>
+			{
+				builder.AddDebug();
+			});
 			services.AddSingleton<Form1>();
 			services.AddSingleton<IQueryPhoneClient, PhoneBookClient>();
 			services.AddSingleton<IQueryPhoneClient, TellowsClient>();
