@@ -40,7 +40,7 @@
 			btnQueryPhone.Name = "btnQueryPhone";
 			btnQueryPhone.Size = new Size(86, 28);
 			btnQueryPhone.TabIndex = 0;
-			btnQueryPhone.Text = "button1";
+			btnQueryPhone.Text = "查詢";
 			btnQueryPhone.UseVisualStyleBackColor = true;
 			btnQueryPhone.Click += btnQueryPhone_Click;
 			// 
@@ -79,7 +79,7 @@
 			Controls.Add(txtPhone);
 			Controls.Add(btnQueryPhone);
 			Name = "Form1";
-			Text = "Form1";
+			Text = "QueryPhone";
 			ResumeLayout(false);
 			PerformLayout();
 		}
