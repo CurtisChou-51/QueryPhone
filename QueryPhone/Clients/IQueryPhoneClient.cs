@@ -3,9 +3,9 @@
 namespace QueryPhone.Clients
 {
     public interface IQueryPhoneClient
-	{
-		string GetName();
+    {
+        string GetName();
 
-		Task<QueryPhoneResult> QueryAsync(string phone);
-	}
+        Task<QueryPhoneResult> QueryAsync(string phone);
+    }
 }
