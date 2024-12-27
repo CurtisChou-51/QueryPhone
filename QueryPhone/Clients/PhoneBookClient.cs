@@ -1,8 +1,6 @@
-﻿using System.Net;
-using System.Reflection;
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using QueryPhone.Model;
+using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace QueryPhone.Clients
@@ -10,11 +8,14 @@ namespace QueryPhone.Clients
     public class PhoneBookClient : IQueryPhoneClient
     {
         private readonly ILogger _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
+
         private string QueryUrl(string phone) => $"https://phone-book.tw/search/{phone}.html";
 
-        public PhoneBookClient(ILogger<PhoneBookClient> logger)
+        public PhoneBookClient(ILogger<PhoneBookClient> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         public string GetName()
@@ -54,11 +55,11 @@ namespace QueryPhone.Clients
 
             string? summary = summaryAreaNode.SelectSingleNode("..//h1[contains(., '簡易摘要')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(summary))
-                yield return summary;
+                yield return Regex.Replace(summary, @"\s+", string.Empty);
 
             string? vote = summaryAreaNode.SelectSingleNode("..//h1[contains(., '可信賴') and contains(., '不可信賴') and contains(., '票')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(vote))
-                yield return vote;
+                yield return Regex.Replace(vote, @"\s+", string.Empty);
 
             string? queryTimes = summaryAreaNode.SelectSingleNode("..//h2[contains(., '查詢次數')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(queryTimes))
@@ -79,26 +80,18 @@ namespace QueryPhone.Clients
 
         private async Task<string> QueryImpl(string phone)
         {
-            var request = HttpWebRequest.Create(QueryUrl(phone));
-            request.Method = "GET";
-
-            // 此網站會檢查header，不通過會回應403
-            // Host的順序必須在首位、User-Agent須為瀏覽器
-            MethodInfo? priMethod = request.Headers.GetType().GetMethod("AddWithoutValidate", BindingFlags.Instance | BindingFlags.NonPublic);
-            priMethod?.Invoke(request.Headers, new[] { "Host", "phone-book.tw" });
-            priMethod?.Invoke(request.Headers, new[] { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" });
-
-            var response = await request.GetResponseAsync();
-            var stream = response.GetResponseStream();
-            using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-            return await reader.ReadToEndAsync();
+            var client = _httpClientFactory.CreateClient();
+            var req = new HttpRequestMessage(HttpMethod.Get, QueryUrl(phone));
+            req.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+            var resp = await client.SendAsync(req);
+            return await resp.Content.ReadAsStringAsync();
         }
 
         private async Task<HtmlDocument> QueryToDocImpl(string phone)
         {
-            var resp = await QueryImpl(phone);
+            string respStr = await QueryImpl(phone);
             HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(resp);
+            doc.LoadHtml(respStr);
             return doc;
         }
     }
