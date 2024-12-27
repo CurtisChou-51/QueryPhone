@@ -20,6 +20,7 @@ namespace QueryPhone
             {
                 builder.AddDebug();
             });
+            services.AddHttpClient();
             services.AddSingleton<Form1>();
             services.AddSingleton<IQueryPhoneClient, PhoneBookClient>();
             services.AddSingleton<IQueryPhoneClient, TellowsClient>();
