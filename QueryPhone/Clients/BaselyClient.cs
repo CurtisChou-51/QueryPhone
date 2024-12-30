@@ -8,13 +8,14 @@ namespace QueryPhone.Clients
     public class BaselyClient : IQueryPhoneClient
     {
         private readonly ILogger _logger;
-        private readonly HttpClient client = new HttpClient();
+        private readonly IHttpClientFactory _httpClientFactory;
 
         private string QueryUrl(string phone) => $"https://base.ly/tw/{phone}";
 
-        public BaselyClient(ILogger<TellowsClient> logger)
+        public BaselyClient(ILogger<BaselyClient> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         public string GetName()
@@ -26,10 +27,21 @@ namespace QueryPhone.Clients
         {
             try
             {
-                HtmlDocument doc = await QueryToDocImpl(phone);
+                var resp = await QueryImpl(phone);
+                if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return new QueryPhoneResult
+                    {
+                        Success = true,
+                        QueryUrl = QueryUrl(phone),
+                        ReportMsgs = ["查無資料"],
+                        SummaryMsgs = ["查無資料"]
+                    };
+                string respStr = await resp.Content.ReadAsStringAsync();
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(respStr);
 
-                var reportMsgs = ExtReports(doc).Distinct().ToList();
-                var summaryMsgs = ExtSummary(doc).Distinct().ToList();
+                var reportMsgs = YieldReportMsgs(doc).Distinct().ToList();
+                var summaryMsgs = YieldSummaryMsgs(doc).Distinct().ToList();
 
                 return new QueryPhoneResult
                 {
@@ -46,7 +58,8 @@ namespace QueryPhone.Clients
             }
         }
 
-        private IEnumerable<string> ExtReports(HtmlDocument doc)
+        /// <summary> 提取用戶回報文字 </summary>
+        private static IEnumerable<string> YieldReportMsgs(HtmlDocument doc)
         {
             var nodes = doc.DocumentNode.SelectNodes("//div[@class='comments']//article");
             if (nodes == null)
@@ -56,7 +69,8 @@ namespace QueryPhone.Clients
                 yield return Regex.Replace(node.InnerText, @"\s+", " ").Trim();
         }
 
-        private IEnumerable<string> ExtSummary(HtmlDocument doc)
+        /// <summary> 提取總評文字 </summary>
+        private static IEnumerable<string> YieldSummaryMsgs(HtmlDocument doc)
         {
             var node = doc.DocumentNode.SelectSingleNode("//div[@class='phone-summary']");
             if (node == null)
@@ -65,14 +79,13 @@ namespace QueryPhone.Clients
             yield return Regex.Replace(node.InnerText, @"\s+", " ").Trim();
         }
 
-        private async Task<HtmlDocument> QueryToDocImpl(string phone)
+        private Task<HttpResponseMessage> QueryImpl(string phone)
         {
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
-            client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-            var resp = await client.GetStringAsync(QueryUrl(phone));
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(resp);
-            return doc;
+            var client = _httpClientFactory.CreateClient();
+            var req = new HttpRequestMessage(HttpMethod.Get, QueryUrl(phone));
+            req.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+            req.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+            return client.SendAsync(req);
         }
 
     }

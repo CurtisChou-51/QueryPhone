@@ -28,10 +28,13 @@ namespace QueryPhone.Clients
         {
             try
             {
-                HtmlDocument doc = await QueryToDocImpl(phone);
+                var resp = await QueryImpl(phone);
+                string respStr = await resp.Content.ReadAsStringAsync();
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(respStr);
 
-                var reportMsgs = ExtReports(doc).Distinct().ToList();
-                var summaryMsgs = ExtSummary(doc).Distinct().ToList();
+                var reportMsgs = YieldReportMsgs(doc).Distinct().ToList();
+                var summaryMsgs = YieldSummaryMsgs(doc).Distinct().ToList();
 
                 // 將[總評]與[用戶回報]重複出現的部分自[總評]中移除
                 summaryMsgs = summaryMsgs.Where(cm => !reportMsgs.Any(tm => tm.StartsWith(cm))).ToList();
@@ -51,7 +54,8 @@ namespace QueryPhone.Clients
             }
         }
 
-        private IEnumerable<string> ExtReports(HtmlDocument doc)
+        /// <summary> 提取用戶回報文字 </summary>
+        private static IEnumerable<string> YieldReportMsgs(HtmlDocument doc)
         {
             var nodes = doc.DocumentNode.SelectNodes("//table[@class='table-rating']//th");
             if (nodes == null)
@@ -65,7 +69,8 @@ namespace QueryPhone.Clients
             }
         }
 
-        private IEnumerable<string> ExtSummary(HtmlDocument doc)
+        /// <summary> 提取總評文字 </summary>
+        private static IEnumerable<string> YieldSummaryMsgs(HtmlDocument doc)
         {
             var cardBody = doc.DocumentNode.SelectSingleNode("//div[@class='card-body']");
             if (cardBody == null)
@@ -100,19 +105,13 @@ namespace QueryPhone.Clients
             }
         }
 
-        private async Task<HtmlDocument> QueryToDocImpl(string phone)
+        private Task<HttpResponseMessage> QueryImpl(string phone)
         {
             var client = _httpClientFactory.CreateClient();
             var req = new HttpRequestMessage(HttpMethod.Get, QueryUrl(phone));
             req.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
             req.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-            var resp = await client.SendAsync(req);
-            string respStr = await resp.Content.ReadAsStringAsync();
-
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(respStr);
-            return doc;
+            return client.SendAsync(req);
         }
-
     }
 }

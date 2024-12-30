@@ -1,6 +1,7 @@
 using QueryPhone.Clients;
 using QueryPhone.Model;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace QueryPhone
 {
@@ -21,15 +22,14 @@ namespace QueryPhone
 
         private async void btnQueryPhone_Click(object sender, EventArgs e)
         {
-            string phone = txtPhone.Text;
+            string phone = GetQueryPhone();
             if (string.IsNullOrEmpty(phone))
             {
                 MessageBox.Show("請輸入號碼");
                 return;
             }
 
-            var checkedItemNames = clientsCheckedListBox.CheckedItems.OfType<string>();
-            var checkedClients = _queryPhoneClients.Join(checkedItemNames, ins => ins.GetName(), name => name, (ins, name) => ins);
+            IEnumerable<IQueryPhoneClient> checkedClients = GetCheckedClients();
             if (!checkedClients.Any())
             {
                 MessageBox.Show("請選取查詢來源");
@@ -51,7 +51,8 @@ namespace QueryPhone
             }
         }
 
-        private string PrintResult(string name, QueryPhoneResult result)
+        /// <summary> 顯示查詢結果 </summary>
+        private static string PrintResult(string name, QueryPhoneResult result)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"-------{name}-------");
@@ -71,5 +72,25 @@ namespace QueryPhone
             sb.AppendLine();
             return sb.ToString();
         }
+
+        /// <summary> 取得查詢電話號碼 </summary>
+        private string GetQueryPhone()
+        {
+            string phone = txtPhone.Text;
+            if (string.IsNullOrEmpty(phone))
+                return phone;
+            return Regex.Replace(phone, @"\D", string.Empty);
+        }
+
+        /// <summary> 取得勾選的查詢來源 </summary>
+        private IEnumerable<IQueryPhoneClient> GetCheckedClients()
+        {
+            IEnumerable<string> checkedItemNames = this.clientsCheckedListBox.CheckedItems.OfType<string>();
+            return _queryPhoneClients.Join(checkedItemNames, 
+                ins => ins.GetName(), 
+                name => name, 
+                (ins, name) => ins);
+        }
+
     }
 }
