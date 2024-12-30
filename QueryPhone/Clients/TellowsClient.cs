@@ -9,13 +9,14 @@ namespace QueryPhone.Clients
     public class TellowsClient : IQueryPhoneClient
     {
         private readonly ILogger _logger;
-        private readonly HttpClient client = new HttpClient();
+        private readonly IHttpClientFactory _httpClientFactory;
 
         private string QueryUrl(string phone) => $"https://www.tellows.tw/num/{phone}";
 
-        public TellowsClient(ILogger<TellowsClient> logger)
+        public TellowsClient(ILogger<TellowsClient> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         public string GetName()
@@ -31,6 +32,8 @@ namespace QueryPhone.Clients
 
                 var reportMsgs = ExtReports(doc).Distinct().ToList();
                 var summaryMsgs = ExtSummary(doc).Distinct().ToList();
+
+                // 將[總評]與[用戶回報]重複出現的部分自[總評]中移除
                 summaryMsgs = summaryMsgs.Where(cm => !reportMsgs.Any(tm => tm.StartsWith(cm))).ToList();
 
                 return new QueryPhoneResult
@@ -99,12 +102,15 @@ namespace QueryPhone.Clients
 
         private async Task<HtmlDocument> QueryToDocImpl(string phone)
         {
-            // 此網站須設置header否則遇到沒查過的號碼時會回應404
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
-            client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-            var resp = await client.GetStringAsync(QueryUrl(phone));
+            var client = _httpClientFactory.CreateClient();
+            var req = new HttpRequestMessage(HttpMethod.Get, QueryUrl(phone));
+            req.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+            req.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+            var resp = await client.SendAsync(req);
+            string respStr = await resp.Content.ReadAsStringAsync();
+
             HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(resp);
+            doc.LoadHtml(respStr);
             return doc;
         }
 
