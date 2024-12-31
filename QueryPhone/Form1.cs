@@ -15,7 +15,7 @@ namespace QueryPhone
             _queryPhoneClients = queryPhoneClients;
             foreach (var ins in _queryPhoneClients)
             {
-                int i = clientsCheckedListBox.Items.Add(ins.GetName());
+                int i = clientsCheckedListBox.Items.Add(ins.Name);
                 clientsCheckedListBox.SetItemChecked(i, true);
             }
         }
@@ -40,7 +40,7 @@ namespace QueryPhone
             var tasks = checkedClients.Select(client =>
                 Task.Run(async () =>
                 {
-                    return PrintResult(client.GetName(), await client.QueryAsync(phone));
+                    return PrintResult(client.Name, await client.QueryAsync(phone));
                 })).ToList();
 
             while (tasks.Count > 0)
@@ -87,7 +87,7 @@ namespace QueryPhone
         {
             IEnumerable<string> checkedItemNames = this.clientsCheckedListBox.CheckedItems.OfType<string>();
             return _queryPhoneClients.Join(checkedItemNames, 
-                ins => ins.GetName(), 
+                ins => ins.Name, 
                 name => name, 
                 (ins, name) => ins);
         }

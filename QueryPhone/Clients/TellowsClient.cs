@@ -19,10 +19,7 @@ namespace QueryPhone.Clients
             _httpClientFactory = httpClientFactory;
         }
 
-        public string GetName()
-        {
-            return "Tellows 誰打來的電話";
-        }
+        public string Name => "Tellows 誰打來的電話";
 
         public async Task<QueryPhoneResult> QueryAsync(string phone)
         {
