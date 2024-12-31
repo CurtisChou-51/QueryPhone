@@ -15,10 +15,7 @@ namespace QueryPhone.Clients
             _logger = logger;
         }
 
-        public string GetName()
-        {
-            return "WhosNumber 到底是誰打來的電話";
-        }
+        public string Name => "WhosNumber 到底是誰打來的電話";
 
         public async Task<QueryPhoneResult> QueryAsync(string phone)
         {
