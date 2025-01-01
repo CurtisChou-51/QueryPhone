@@ -23,8 +23,8 @@ namespace QueryPhone.Clients
             {
                 HtmlDocument doc = await QueryToDocImpl(phone);
 
-                var summaryMsgs = ExtSummary(doc).Distinct().ToList();
-                var reportMsgs = ExtReports(doc).Distinct().ToList();
+                var summaryMsgs = YieldSummaryMsgs(doc).Distinct().ToList();
+                var reportMsgs = YieldReportMsgs(doc).Distinct().ToList();
                 reportMsgs = reportMsgs.GroupBy(x => x).Select(g => $"{g.Key} ({g.Count()})").ToList();
 
                 return new QueryPhoneResult
@@ -42,7 +42,8 @@ namespace QueryPhone.Clients
             }
         }
 
-        private IEnumerable<string> ExtSummary(HtmlDocument doc)
+        /// <summary> 提取用戶回報文字 </summary>
+        private static IEnumerable<string> YieldSummaryMsgs(HtmlDocument doc)
         {
             var infoNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-4']//p[contains(., '這個號碼的基本信息')]");
             if (infoNode == null)
@@ -57,7 +58,8 @@ namespace QueryPhone.Clients
                 yield return text;
         }
 
-        private IEnumerable<string> ExtReports(HtmlDocument doc)
+        /// <summary> 提取總評文字 </summary>
+        private static IEnumerable<string> YieldReportMsgs(HtmlDocument doc)
         {
             var imgNodes = doc.DocumentNode.SelectNodes("//div[@class='panel-body']//img");
             if (imgNodes == null)

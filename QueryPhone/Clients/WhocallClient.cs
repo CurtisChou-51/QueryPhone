@@ -24,14 +24,14 @@ namespace QueryPhone.Clients
             {
                 HtmlDocument doc = await QueryToDocImpl(phone);
 
-                List<string> reportMsgs = ExtReports(doc).ToList();
+                List<string> reportMsgs = YieldReportMsgs(doc).ToList();
                 foreach (var page in ExtPageLinks(doc).Where(x => x != 1))
                 {
                     var docp = await QueryToDocImpl(phone, page);
-                    reportMsgs.AddRange(ExtReports(docp));
+                    reportMsgs.AddRange(YieldReportMsgs(docp));
                 }
                 reportMsgs = reportMsgs.GroupBy(x => x).Select(g => $"{g.Key} ({g.Count()})").ToList();
-                var summaryMsgs = ExtSummary(doc).Distinct().ToList();
+                var summaryMsgs = YieldSummaryMsgs(doc).Distinct().ToList();
 
                 return new QueryPhoneResult
                 {
@@ -48,7 +48,8 @@ namespace QueryPhone.Clients
             }
         }
 
-        private IEnumerable<string> ExtReports(HtmlDocument doc)
+        /// <summary> 提取用戶回報文字 </summary>
+        private static IEnumerable<string> YieldReportMsgs(HtmlDocument doc)
         {
             var row = doc.DocumentNode.SelectSingleNode("//dic[@class='row mt-2' and contains(., '最近回報')]");
             if (row == null)
@@ -63,7 +64,8 @@ namespace QueryPhone.Clients
             }
         }
 
-        private IEnumerable<string> ExtSummary(HtmlDocument doc)
+        /// <summary> 提取總評文字 </summary>
+        private static IEnumerable<string> YieldSummaryMsgs(HtmlDocument doc)
         {
             var cardBodyNode = doc.DocumentNode.SelectSingleNode("//dic[@class='card-body' and contains(., '電話資料分析')]");
             if (cardBodyNode == null)
