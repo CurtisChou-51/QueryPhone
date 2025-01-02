@@ -7,12 +7,14 @@ namespace QueryPhone.Clients
     public class WhosNumberClient : IQueryPhoneClient
     {
         private readonly ILogger _logger;
-        private readonly HttpClient client = new HttpClient();
+        private readonly IHttpClientFactory _httpClientFactory;
+
         private string QueryUrl(string phone) => $"https://whosnumber.com/tw/{phone}";
 
-        public WhosNumberClient(ILogger<WhosNumberClient> logger)
+        public WhosNumberClient(ILogger<WhosNumberClient> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
         }
 
         public string Name => "WhosNumber 到底是誰打來的電話";
@@ -21,7 +23,10 @@ namespace QueryPhone.Clients
         {
             try
             {
-                HtmlDocument doc = await QueryToDocImpl(phone);
+                var resp = await QueryImpl(phone);
+                string respStr = await resp.Content.ReadAsStringAsync();
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(respStr);
 
                 var summaryMsgs = YieldSummaryMsgs(doc).Distinct().ToList();
                 var reportMsgs = YieldReportMsgs(doc).Distinct().ToList();
@@ -72,12 +77,11 @@ namespace QueryPhone.Clients
             }
         }
 
-        private async Task<HtmlDocument> QueryToDocImpl(string phone)
+        private Task<HttpResponseMessage> QueryImpl(string phone)
         {
-            var resp = await client.GetStringAsync(QueryUrl(phone));
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(resp);
-            return doc;
+            var client = _httpClientFactory.CreateClient();
+            var req = new HttpRequestMessage(HttpMethod.Get, QueryUrl(phone));
+            return client.SendAsync(req);
         }
     }
 }
