@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using QueryPhone.Model;
+using QueryPhone.Core.Models;
 using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace QueryPhone.Clients
+namespace QueryPhone.Core.Clients
 {
     public class PhoneBookClient : IQueryPhoneClient
     {
