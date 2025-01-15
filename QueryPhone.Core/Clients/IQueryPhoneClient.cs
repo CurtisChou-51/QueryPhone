@@ -1,6 +1,6 @@
-﻿using QueryPhone.Model;
+﻿using QueryPhone.Core.Models;
 
-namespace QueryPhone.Clients
+namespace QueryPhone.Core.Clients
 {
     public interface IQueryPhoneClient
     {

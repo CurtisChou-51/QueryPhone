@@ -1,4 +1,4 @@
-﻿namespace QueryPhone.Model
+﻿namespace QueryPhone.Core.Models
 {
     public class QueryPhoneResult
     {

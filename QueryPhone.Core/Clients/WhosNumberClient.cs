@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using QueryPhone.Model;
+using QueryPhone.Core.Models;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace QueryPhone.Clients
+namespace QueryPhone.Core.Clients
 {
     public class WhosNumberClient : IQueryPhoneClient
     {

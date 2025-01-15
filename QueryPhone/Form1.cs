@@ -1,5 +1,5 @@
-using QueryPhone.Clients;
-using QueryPhone.Model;
+using QueryPhone.Core.Clients;
+using QueryPhone.Core.Models;
 using System.Text;
 using System.Text.RegularExpressions;
 

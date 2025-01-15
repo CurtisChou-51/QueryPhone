@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPhone", "QueryPhone\QueryPhone.csproj", "{CC693315-3712-48D9-AA0B-14020893EC21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPhone.Core", "QueryPhone.Core\QueryPhone.Core.csproj", "{3F94F2F8-0F5C-426E-95C7-2CAFB8905CC4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CC693315-3712-48D9-AA0B-14020893EC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC693315-3712-48D9-AA0B-14020893EC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC693315-3712-48D9-AA0B-14020893EC21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F94F2F8-0F5C-426E-95C7-2CAFB8905CC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F94F2F8-0F5C-426E-95C7-2CAFB8905CC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F94F2F8-0F5C-426E-95C7-2CAFB8905CC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F94F2F8-0F5C-426E-95C7-2CAFB8905CC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
