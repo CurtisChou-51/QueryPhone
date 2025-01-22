@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div v-cloak id="app">
+    <h1>電話號碼查詢</h1>
+    <div class="search-form">
+        <div class="checkbox-group">
+            <label v-for="option in clientOptions" :key="option.value">
+                <input type="checkbox" v-model="checkedClientNames" :value="option.value" />
+                {{ option.label }}
+            </label>
+        </div>
+        <div class="search-input-group">
+            <input v-model="phoneNumber" placeholder="輸入電話號碼" @@keyup.enter="queryPhone" class="phone-input" />
+            <button @@click="queryPhone" class="search-button">查詢</button>
+        </div>
+    </div>
+    <div v-if="loading">查詢中...</div>
+    <div v-if="error" class="result-error">{{ error }}</div>
+    <div v-else-if="results.length" class="results-container">
+        <div v-for="(result, index) in results" :key="index" class="result-item">
+            <div class="result-header">
+                <a :href="result.QueryUrl" target="_blank" class="source-link">{{ result.Name }}</a>
+                <div class="status">
+                    <span :class="{ 'status-success': result.Success, 'status-failure': !result.Success }">
+                        {{ result.Success ? '成功' : '失敗' }}
+                    </span>
+                </div>
+            </div>
+            <div class="summary-section">
+                <h4>摘要</h4>
+                <ul>
+                    <li v-for="(summary, summaryIndex) in result.SummaryMsgs" :key="summaryIndex">
+                        {{ summary }}
+                    </li>
+                </ul>
+            </div>
+            <div class="report-section">
+                <h4>用戶回報</h4>
+                <ul>
+                    <li v-for="(report, reportIndex) in result.ReportMsgs" :key="reportIndex">
+                        {{ report }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div v-else-if="!loading">沒有找到查詢結果</div>
+</div>
+
+<script src="https://unpkg.com/vue@3.3.4/dist/vue.global.prod.js"></script>
+<script src="~/js/index.js" asp-append-version="true"></script>

@@ -1,0 +1,118 @@
+﻿body {
+    font-family: NotoSans, "微軟正黑體", "sans-serif";
+    font-size: 1rem;
+    width: 100%;
+    color: #343434;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.container {
+    margin: 10px;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
+
+.search-input-group {
+    display: flex;
+    margin-bottom: 10px;
+    gap: 1rem;
+}
+
+.phone-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+.search-button {
+    width: 15%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .search-button:hover {
+        background-color: #0056b3;
+    }
+
+.result-container {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.result-error {
+    color: red;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.source-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+li {
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status-success {
+    color: green;
+}
+
+.status-failure {
+    color: red;
+}
+
+.results-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.result-item {
+    width: 40%;
+    border: 1px black dotted;
+    padding: 20px;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+[v-cloak] {
+    display: none
+}
