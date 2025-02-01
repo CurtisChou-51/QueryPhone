@@ -50,17 +50,18 @@ namespace QueryPhone.Core.Clients
         /// <summary> 提取總評文字 </summary>
         private static IEnumerable<string> YieldSummaryMsgs(HtmlDocument doc)
         {
-            var infoNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-4']//p[contains(., '這個號碼的基本信息')]");
-            if (infoNode == null)
+            var infoTitleNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-4']//p[contains(., '這個號碼的基本信息')]");
+            if (infoTitleNode == null)
                 yield break;
 
-            var elem = infoNode;
-            while (elem.Name != "div")
-                elem = elem.NextSibling;
+            // 總評區塊下的所有 h5 標籤內容作為總評文字
+            var infoHeaderNodes = infoTitleNode.ParentNode.SelectNodes("//h5");
+            if (infoHeaderNodes == null)
+                yield break;
 
-            string? text = elem?.InnerText?.Trim();
-            if (!string.IsNullOrWhiteSpace(text))
-                yield return text;
+            foreach (var infoHeaderNode in infoHeaderNodes)
+                if (infoHeaderNode?.InnerText is string text && !string.IsNullOrWhiteSpace(text))
+                    yield return text.Trim();
         }
 
         /// <summary> 提取用戶回報文字 </summary>
