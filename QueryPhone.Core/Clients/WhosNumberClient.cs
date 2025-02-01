@@ -29,7 +29,7 @@ namespace QueryPhone.Core.Clients
                 doc.LoadHtml(respStr);
 
                 var summaryMsgs = YieldSummaryMsgs(doc).Distinct().ToList();
-                var reportMsgs = YieldReportMsgs(doc).Distinct().ToList();
+                var reportMsgs = YieldReportMsgs(doc).ToList();
                 reportMsgs = reportMsgs.GroupBy(x => x).Select(g => $"{g.Key} ({g.Count()})").ToList();
 
                 return new QueryPhoneResult
@@ -47,7 +47,7 @@ namespace QueryPhone.Core.Clients
             }
         }
 
-        /// <summary> 提取用戶回報文字 </summary>
+        /// <summary> 提取總評文字 </summary>
         private static IEnumerable<string> YieldSummaryMsgs(HtmlDocument doc)
         {
             var infoNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-4']//p[contains(., '這個號碼的基本信息')]");
@@ -63,7 +63,7 @@ namespace QueryPhone.Core.Clients
                 yield return text;
         }
 
-        /// <summary> 提取總評文字 </summary>
+        /// <summary> 提取用戶回報文字 </summary>
         private static IEnumerable<string> YieldReportMsgs(HtmlDocument doc)
         {
             var imgNodes = doc.DocumentNode.SelectNodes("//div[@class='panel-body']//img");
