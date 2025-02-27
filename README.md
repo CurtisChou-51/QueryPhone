@@ -1,10 +1,10 @@
 # QueryPhone
 
 - QueryPhone.Core 是一個 .NET Core 類別庫，用途為電話號碼查詢，輸入電話號碼並查詢特定網站，快速獲取相關資訊摘要，提供範例 WinForm 與 Web 介面
-  - QueryPhone 為 WinForm 介面
-  - QueryPhone.Web 為 Web 介面
-
-![](screenshot.png)
+  - QueryPhone WinForm 介面  
+![](images/01.png)
+  - QueryPhone.Web 介面
+![](images/02.png)
 
 ## 概述
 
