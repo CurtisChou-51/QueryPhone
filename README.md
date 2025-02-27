@@ -1,15 +1,17 @@
 # QueryPhone
 
-- 這是個 WinForm 程式，用途為電話號碼查詢，輸入電話號碼並查詢特定網站，快速獲取相關資訊摘要
+- QueryPhone.Core 是一個 .NET Core 類別庫，用途為電話號碼查詢，輸入電話號碼並查詢特定網站，快速獲取相關資訊摘要，提供範例 WinForm 與 Web 介面
+  - QueryPhone 為 WinForm 介面
+  - QueryPhone.Web 為 Web 介面
 
 ![](screenshot.png)
 
 ## 概述
 
-1. 輸入電話號碼：使用者在 WinForm 介面中輸入電話號碼
+1. 輸入電話號碼：使用者在 WinForm 或 Web 介面中輸入電話號碼
 2. 發送查詢請求：發送 HTTP 請求至特定網站查詢電話號碼相關資訊
 3. 解析HTML回應：解析網站回應的 HTML 內容，提取所需的資訊摘要
-4. 顯示查詢結果：在 WinForm 介面中顯示查詢結果摘要
+4. 顯示查詢結果：在 WinForm 或 Web 介面中顯示查詢結果摘要
 
 
 ## 限制
