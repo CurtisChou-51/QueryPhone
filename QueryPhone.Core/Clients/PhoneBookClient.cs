@@ -25,6 +25,12 @@ namespace QueryPhone.Core.Clients
             try
             {
                 var resp = await QueryImpl(phone);
+                if (resp.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    // 403 Forbidden, retry after 0.5 second
+                    await Task.Delay(500);
+                    resp = await QueryImpl(phone);
+                }
                 string respStr = await resp.Content.ReadAsStringAsync();
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(respStr);
