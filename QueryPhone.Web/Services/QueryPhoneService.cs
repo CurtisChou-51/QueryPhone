@@ -41,6 +41,11 @@ namespace QueryPhone.Web.Services
             }
         }
 
+        public IEnumerable<string> GetClientNames()
+        {
+            return _queryPhoneClients.Select(ins => ins.Name);
+        }
+
         private static string GetQueryPhone(string phone)
         {
             if (string.IsNullOrEmpty(phone))
