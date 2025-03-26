@@ -19,6 +19,11 @@ namespace QueryPhone.Web.Controllers
             return View();
         }
 
+        public IActionResult GetClientNames()
+        {
+            return Json(_queryPhoneService.GetClientNames().Select(x => new { label = x, value = x }));
+        }
+
         public async IAsyncEnumerable<QueryPhoneResultViewModel> QueryPhone([FromBody]QueryPhoneConditionViewModel vm)
         {
             await foreach (var result in _queryPhoneService.QueryAsync(vm))

@@ -23,15 +23,14 @@ createApp({
         let loading = ref(false);
         let error = ref(null);
         let checkedClientNames = ref([]);
-        let clientOptions = ref([
-            { label: 'WhosNumber 到底是誰打來的電話', value: 'WhosNumber 到底是誰打來的電話' },
-            { label: 'Whocall 查電話', value: 'Whocall 查電話' },
-            { label: 'Tellows 誰打來的電話', value: 'Tellows 誰打來的電話' },
-            { label: 'PhoneBook 黃頁電話簿', value: 'PhoneBook 黃頁電話簿' },
-            { label: 'Basely 搜索電話號碼', value: 'Basely 搜索電話號碼' },
-            { label: 'Slickly 搜索和分享未知電話號碼', value: 'Slickly 搜索和分享未知電話號碼' }
-        ]);
-        checkedClientNames.value = clientOptions.value.map(x => x.value);
+        let clientOptions = ref([]);
+
+        fetch('/Home/GetClientNames')
+            .then(response => response.json())
+            .then(jsonData => {
+                clientOptions.value = jsonData;
+                checkedClientNames.value = jsonData.map(x => x.value);
+            });
 
         let queryPhone = async () => {
             if (!phoneNumber.value) {
