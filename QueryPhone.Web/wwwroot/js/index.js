@@ -28,7 +28,8 @@ createApp({
             { label: 'Whocall 查電話', value: 'Whocall 查電話' },
             { label: 'Tellows 誰打來的電話', value: 'Tellows 誰打來的電話' },
             { label: 'PhoneBook 黃頁電話簿', value: 'PhoneBook 黃頁電話簿' },
-            { label: 'Basely 搜索電話號碼', value: 'Basely 搜索電話號碼' }
+            { label: 'Basely 搜索電話號碼', value: 'Basely 搜索電話號碼' },
+            { label: 'Slickly 搜索和分享未知電話號碼', value: 'Slickly 搜索和分享未知電話號碼' }
         ]);
         checkedClientNames.value = clientOptions.value.map(x => x.value);
 

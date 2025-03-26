@@ -27,6 +27,7 @@ namespace QueryPhone
             services.AddSingleton<IQueryPhoneClient, WhocallClient>();
             services.AddSingleton<IQueryPhoneClient, WhosNumberClient>();
             services.AddSingleton<IQueryPhoneClient, BaselyClient>();
+            services.AddSingleton<IQueryPhoneClient, SlicklyClient>();
 
             ApplicationConfiguration.Initialize();
             Application.Run(services.BuildServiceProvider().GetRequiredService<Form1>());
