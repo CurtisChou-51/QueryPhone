@@ -19,6 +19,7 @@ namespace QueryPhone.Web
             builder.Services.AddSingleton<IQueryPhoneClient, WhocallClient>();
             builder.Services.AddSingleton<IQueryPhoneClient, WhosNumberClient>();
             builder.Services.AddSingleton<IQueryPhoneClient, BaselyClient>();
+            builder.Services.AddSingleton<IQueryPhoneClient, SlicklyClient>();
 
             var app = builder.Build();
 
