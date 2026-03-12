@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
+using QueryPhone.Core.Helpers;
 using QueryPhone.Core.Models;
-using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace QueryPhone.Core.Clients
@@ -61,11 +61,11 @@ namespace QueryPhone.Core.Clients
 
             string? summary = summaryAreaNode.SelectSingleNode("..//h1[contains(., '簡易摘要')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(summary))
-                yield return Regex.Replace(summary, @"\s+", string.Empty);
+                yield return RegexHelper.RemoveWhitespace(summary);
 
             string? vote = summaryAreaNode.SelectSingleNode("..//h1[contains(., '可信賴') and contains(., '不可信賴') and contains(., '票')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(vote))
-                yield return Regex.Replace(vote, @"\s+", string.Empty);
+                yield return RegexHelper.RemoveWhitespace(vote);
 
             string? queryTimes = summaryAreaNode.SelectSingleNode("..//h2[contains(., '查詢次數')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(queryTimes))

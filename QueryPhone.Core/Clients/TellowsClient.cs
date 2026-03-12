@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using QueryPhone.Core.Helpers;
 using QueryPhone.Core.Models;
-using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace QueryPhone.Core.Clients
@@ -60,7 +60,7 @@ namespace QueryPhone.Core.Clients
 
             foreach (HtmlNode node in nodes)
             {
-                string text = Regex.Replace(node.InnerText, @"\s+", " ").Trim();
+                string text = RegexHelper.CollapseWhitespace(node.InnerText).Trim();
                 if (!string.IsNullOrWhiteSpace(text))
                     yield return text;
             }
@@ -87,7 +87,7 @@ namespace QueryPhone.Core.Clients
 
             string? statsqueries = cardBody.SelectSingleNode(".//strong[contains(., '搜尋次數:')]")?.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(statsqueries))
-                yield return Regex.Replace(statsqueries, @"\s+", " ");
+                yield return RegexHelper.CollapseWhitespace(statsqueries);
 
             string? score = cardBody.SelectSingleNode(".//strong[text()='評分:']")?.NextSibling.InnerText?.Trim();
             if (!string.IsNullOrWhiteSpace(score))

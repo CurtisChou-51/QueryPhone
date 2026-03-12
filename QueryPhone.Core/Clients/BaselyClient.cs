@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using QueryPhone.Core.Helpers;
 using QueryPhone.Core.Models;
-using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace QueryPhone.Core.Clients
@@ -63,7 +63,7 @@ namespace QueryPhone.Core.Clients
                 yield break;
 
             foreach (var node in nodes)
-                yield return Regex.Replace(node.InnerText, @"\s+", " ").Trim();
+                yield return RegexHelper.CollapseWhitespace(node.InnerText).Trim();
         }
 
         /// <summary> 提取總評文字 </summary>
@@ -73,7 +73,7 @@ namespace QueryPhone.Core.Clients
             if (node == null)
                 yield break;
 
-            yield return Regex.Replace(node.InnerText, @"\s+", " ").Trim();
+            yield return RegexHelper.CollapseWhitespace(node.InnerText).Trim();
         }
 
         private Task<HttpResponseMessage> QueryImpl(string phone)
