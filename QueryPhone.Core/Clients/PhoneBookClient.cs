@@ -75,9 +75,14 @@ namespace QueryPhone.Core.Clients
         /// <summary> 提取用戶回報文字 </summary>
         private static IEnumerable<string> YieldReportMsgs(HtmlDocument doc)
         {
-            var titleNodes = doc.DocumentNode.SelectNodes("//h1[@class='card-title']");
+            var sectionNode = doc.DocumentNode.SelectSingleNode("//section[contains(@class, 'CO_city') and contains(@class, 'row_card_')]");
+            if (sectionNode == null)
+                yield break;
+
+            var titleNodes = sectionNode.SelectNodes(".//h1[contains(@class, 'card-title')]");
             if (titleNodes == null)
                 yield break;
+
             foreach (var titleNode in titleNodes)
             {
                 if (!string.IsNullOrWhiteSpace(titleNode.InnerText))
