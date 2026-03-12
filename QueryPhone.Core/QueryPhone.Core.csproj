@@ -10,6 +10,7 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageReference Include="PuppeteerSharp" Version="24.39.0" />
   </ItemGroup>
 
 </Project>

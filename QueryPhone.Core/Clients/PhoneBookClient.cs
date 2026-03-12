@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp;
 using QueryPhone.Core.Models;
 using System.Text.RegularExpressions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
@@ -8,14 +9,12 @@ namespace QueryPhone.Core.Clients
     public class PhoneBookClient : IQueryPhoneClient
     {
         private readonly ILogger _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
 
         private string QueryUrl(string phone) => $"https://phone-book.tw/search/{phone}.html";
 
-        public PhoneBookClient(ILogger<PhoneBookClient> logger, IHttpClientFactory httpClientFactory)
+        public PhoneBookClient(ILogger<PhoneBookClient> logger)
         {
             _logger = logger;
-            _httpClientFactory = httpClientFactory;
         }
 
         public string Name => "PhoneBook 黃頁電話簿";
@@ -31,7 +30,7 @@ namespace QueryPhone.Core.Clients
                     await Task.Delay(500);
                     resp = await QueryImpl(phone);
                 }
-                string respStr = await resp.Content.ReadAsStringAsync();
+                string respStr = resp.Content;
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(respStr);
 
@@ -86,14 +85,28 @@ namespace QueryPhone.Core.Clients
             }
         }
 
-        private Task<HttpResponseMessage> QueryImpl(string phone)
+        private async Task<(System.Net.HttpStatusCode StatusCode, string Content)> QueryImpl(string phone)
         {
-            var client = _httpClientFactory.CreateClient();
-            var req = new HttpRequestMessage(HttpMethod.Get, QueryUrl(phone));
-            req.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
-            req.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-            req.Headers.Add("Accept-language", "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7");
-            return client.SendAsync(req);
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync();
+
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+            await using var page = await browser.NewPageAsync();
+
+            await page.SetUserAgentAsync("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+            await page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
+            {
+                { "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" },
+                { "Accept-language", "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7" }
+            });
+
+            var response = await page.GoToAsync(QueryUrl(phone), new NavigationOptions
+            {
+                WaitUntil = new[] { WaitUntilNavigation.Networkidle2 }
+            });
+
+            var content = await page.GetContentAsync();
+            return (response?.Status ?? System.Net.HttpStatusCode.OK, content);
         }
     }
 }
