@@ -9,7 +9,7 @@ namespace QueryPhone.Core.Helpers
 
         public static string RemoveWhitespace(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
+            if (string.IsNullOrEmpty(input))
                 return input;
             
             return WhitespaceRegex().Replace(input, string.Empty);
@@ -17,7 +17,7 @@ namespace QueryPhone.Core.Helpers
 
         public static string CollapseWhitespace(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
+            if (string.IsNullOrEmpty(input))
                 return input;
             
             return WhitespaceRegex().Replace(input, " ");
